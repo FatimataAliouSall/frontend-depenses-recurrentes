@@ -23,13 +23,13 @@
           <td>{{ user.status ? 'Actif' : 'Inactif' }}</td>
           <td>
             <button @click="viewUser(user.id)" class="btn btn-info btn-sm btn-sm me-2">
-              <i class="fas fa-eye"></i> Voir
+              <i class="fas fa-eye"></i> 
             </button>
             <button @click="editUser(user.id)" class="btn btn-warning btn-sm btn-sm me-2">
-              <i class="fas fa-edit"></i> Éditer
+              <i class="fas fa-edit"></i> 
             </button>
             <button @click="deleteUser(user.id)" class="btn btn-danger btn-sm btn-sm me-2">
-              <i class="fas fa-trash-alt"></i> Supprimer
+              <i class="fas fa-trash-alt"></i> 
             </button>
 
           </td>
