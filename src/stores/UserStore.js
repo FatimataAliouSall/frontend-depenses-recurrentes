@@ -1,4 +1,3 @@
-// stores/UserStore.js
 import { defineStore } from 'pinia';
 import axios from 'axios';
 
@@ -55,12 +54,11 @@ export const useUserStore = defineStore('userStore', {
       }
     },
 
-    // Nouvelle méthode pour récupérer un utilisateur par son ID
     async getUserById(id) {
       try {
         const response = await axios.get(`http://localhost:3000/api/users/${id}`);
         if (response.status === 200) {
-          this.user = response.data; // Met à jour l'utilisateur dans le state
+          this.user = response.data; 
         } else {
           console.error('Échec de la récupération de l\'utilisateur avec le statut :', response.status);
         }
@@ -69,16 +67,13 @@ export const useUserStore = defineStore('userStore', {
         throw error;
       }
     },
-
-    // Nouvelle méthode pour mettre à jour un utilisateur
     async updateUser(user) {
       try {
         const response = await axios.put(`http://localhost:3000/api/users/${user.id}`, user);
         if (response.status === 200) {
-          // Optionnel : Vous pouvez mettre à jour la liste des utilisateurs ici si nécessaire
           const index = this.users.findIndex(u => u.id === user.id);
           if (index !== -1) {
-            this.users[index] = response.data; // Mise à jour de l'utilisateur dans le state
+            this.users[index] = response.data;
           }
         } else {
           console.error('Échec de la mise à jour de l\'utilisateur avec le statut :', response.status);
