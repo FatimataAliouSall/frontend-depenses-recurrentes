@@ -60,10 +60,13 @@ import ViewExpense from '@/components/expenses/ViewExpense.vue';
 import Payments from '@/components/payments/ListPayment.vue';
 import Planning from '@/components/plannings/ListPlanning.vue';
 import PaymentMethods from '@components/paymentMethods/ListPaymentMethod.vue';
+import AddPaymentMethod from '@/components/paymentMethods/AddPaymentMethod.vue';
+import EditPaymentMethod from '@/components/paymentMethods/EditPaymentMethod.vue';
+import ViewPaymentMethod from '@/components/paymentMethods/ViewPaymentMethod.vue';
 import ExpenseCategory from '@/components/expenseCategorys/ListExpenseCategory.vue';
-import AddExpenseCategory from '@/components/expenseCategorys/AddExpenseCategory.vue'; // Nouveau
-import EditExpenseCategory from '@/components/expenseCategorys/EditExpenseCategory.vue'; // Nouveau
-import ViewExpenseCategory from '@/components/expenseCategorys/ViewExpenseCategory.vue'; // Nouveau
+import AddExpenseCategory from '@/components/expenseCategorys/AddExpenseCategory.vue'; 
+import EditExpenseCategory from '@/components/expenseCategorys/EditExpenseCategory.vue'; 
+import ViewExpenseCategory from '@/components/expenseCategorys/ViewExpenseCategory.vue'; 
 
 const routes = [
   { path: '/', name: 'login', component: Login },
@@ -83,6 +86,9 @@ const routes = [
       { path: 'payments', name: 'payments', component: Payments },
       { path: 'planning', name: 'planning', component: Planning },
       { path: 'payment-methods', name: 'paymentMethods', component: PaymentMethods },
+      { path: 'payment-methods/add', name: 'addPaymentMethod', component: AddPaymentMethod },
+      { path: 'payment-methods/edit/:id', name: 'editPaymentMethod', component: EditPaymentMethod, props: true },
+      { path: 'payment-methods/view/:id', name: 'viewPaymentMethod', component: ViewPaymentMethod, props: true },
       { path: 'expense-category', name: 'expenseCategory', component: ExpenseCategory },
       { path: 'expense-category/add', name: 'addExpenseCategory', component: AddExpenseCategory }, 
       { path: 'expense-category/edit/:id', name: 'editExpenseCategory', component: EditExpenseCategory, props: true }, 
