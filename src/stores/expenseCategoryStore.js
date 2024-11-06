@@ -108,7 +108,6 @@ export const useExpenseCategoryStore = defineStore('expenseCategoryStore', {
       }
     },
 
-    // Nouvelle fonction pour obtenir une catégorie de dépense par ID
     async getExpenseCategoryById(id) {
       this.isLoading = true;
       this.error = null;
