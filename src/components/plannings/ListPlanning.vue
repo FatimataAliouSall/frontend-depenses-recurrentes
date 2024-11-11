@@ -1,15 +1,15 @@
 <template>
   <div>
-    <h2>Planning lists</h2>
-    <button @click="fetchPlannings" class="btn btn-primary mb-3">Add plannings</button>
+    <h2>Liste des planifications</h2>
+    <button @click="addPlanning" class="btn btn-primary mb-3">Ajouter</button>
     <table class="table table-striped">
       <thead>
         <tr>
-          <th>Name</th>
-          <th>StartDate</th>
-          <th>EndDate</th>
-          <th>Amount</th>
-          <th>Expense</th>
+          <th>Nom</th>
+          <th>Date debut</th>
+          <th>Date fin</th>
+          <th>Montant</th>
+          <th>Dépense</th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -21,8 +21,9 @@
           <td>{{ planning.amount }}</td>
           <td>{{ planning.expense?.title }}</td>
           <td>
-            <button @click="editPlanning(planning.id)" class="btn btn-warning btn-sm">Éditer</button>
-            <button @click="deletePlanning(planning.id)" class="btn btn-danger btn-sm">Supprimer</button>
+            <button @click="editPlanning(planning.id)" class="btn btn-warning btn-sm me-2"><i class="fas fa-edit"></i></button>
+            <button @click="deletePlanning(planning.id)" class="btn btn-danger btn-sm me-2"><i class="fas fa-trash-alt"></i></button>
+            <button @click="viewPlanning(planning.id)" class="btn btn-info btn-sm me-2"><i class="fas fa-eye"></i></button>
           </td>
         </tr>
       </tbody>
@@ -32,25 +33,55 @@
 
 <script setup>
 import { onMounted, computed } from 'vue';
+import { useRouter } from 'vue-router';
 import { usePlanningStore } from '@/stores/PlanningStore.js';
 
 const planningStore = usePlanningStore();
+const router = useRouter();
 
 const fetchPlannings = async () => {
   await planningStore.loadPlannings();
 };
 
+const addPlanning = () => {
+  router.push({ name: 'addPlanning' });
+};
+
 const editPlanning = (planningId) => {
-  console.log("Édition du planning avec l'ID:", planningId);
+  router.push({ name: 'editPlanning', params: { id: planningId }})
+};
+const viewPlanning = (planningId) => {
+  router.push({ name: 'viewPlanning', params: { id: planningId }})
 };
 
 const deletePlanning = async (planningId) => {
-  await planningStore.deletePlanning(planningId);
+  const confirmDelete = window.confirm("Êtes-vous sûr de vouloir supprimer cette planification ?");
+  
+  if (confirmDelete) {
+    try {
+      console.log("Début de la suppression de la planification avec ID:", planningId);
+      
+      await planningStore.removePlanning(planningId);  
+      
+      console.log("Suppression réussie, actualisation de la liste...");
+      
+      await fetchPlannings();  
+      alert("Planification supprimée avec succès.");
+    } catch (error) {
+      console.error("Erreur lors de la suppression de la planification :", error);
+      
+      if (error.response && error.response.data && error.response.data.message) {
+        alert(error.response.data.message + "\n" + error.response.data.suggestion);
+      } else {
+        alert("Une erreur s'est produite lors de la suppression de la planification. Veuillez réessayer.");
+      }
+    }
+  }
 };
 
 onMounted(fetchPlannings);
 
-// Utiliser computed pour assurer la réactivité
+
 const plannings = computed(() => planningStore.plannings);
 </script>
 

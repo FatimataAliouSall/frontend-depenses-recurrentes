@@ -1,11 +1,11 @@
 <template>
   <div>
-    <h2>Listed des paymentMethods</h2>
-    <button @click="addPaymentMethod" class="btn btn-primary mb-3">Ajouter un paymentMethod</button>
+    <h2>Liste des méthodes de paiement</h2>
+    <button @click="addPaymentMethod" class="btn btn-primary mb-3">Ajouter</button>
     <table class="table table-striped">
       <thead>
         <tr>
-          <th>Name</th>
+          <th>Nom</th>
           <th>Status</th>
           <th>Utilisateur</th>
           <th>Actions</th>
@@ -31,6 +31,7 @@
 import { computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { usePaymentMethodStore } from '@/stores/PaymentMethodStore.js';
+// import { useExpenseCategoryStore } from '@/stores/expenseCategoryStore';
 
 const paymentMethodStore = usePaymentMethodStore();
 const router = useRouter();
@@ -48,6 +49,7 @@ const editmethod = (methodId) => {
 };
 
 const viewmethod = (methodId) => {
+
   router.push({ name: 'viewPaymentMethod', params: { id: methodId } });
 };
 

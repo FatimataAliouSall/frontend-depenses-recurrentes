@@ -2,13 +2,14 @@
   <div>
     <h2>Liste des Utilisateurs</h2>
     <button @click="addUser" class="btn btn-primary mb-3">
-  <i class="fas fa-user-plus me-2"></i> Ajouter utilisateurs
+  <i class=" me-2"></i> Ajouter
+  <!-- <i class="bi bi-plus-lg"></i> -->
 </button>
 
     <table class="table table-striped">
       <thead>
         <tr>
-          <th>Nom d'utilisateur</th>
+          <th>Nom</th>
           <th>Email</th>
           <th>Rôle</th>
           <th>Status</th>

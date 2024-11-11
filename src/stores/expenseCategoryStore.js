@@ -17,6 +17,7 @@ export const useExpenseCategoryStore = defineStore('expenseCategoryStore', {
 
   actions: {
     async loadExpenseCategories() {
+      
       this.isLoading = true;
       this.error = null;
       try {
@@ -111,11 +112,10 @@ export const useExpenseCategoryStore = defineStore('expenseCategoryStore', {
     async getExpenseCategoryById(id) {
       this.isLoading = true;
       this.error = null;
-
       try {
         const response = await axios.get(`http://localhost:3000/api/expense-categories/${id}`);
         if (response.status === 200) {
-          this.expenseCategory = response.data; // Mettre à jour l'état avec la catégorie récupérée
+          this.expenseCategory = response.data; // Mettez à jour `this.expenseCategory`
         } else {
           console.error('Échec de la récupération de la catégorie de dépenses avec le statut :', response.status);
         }
@@ -126,5 +126,7 @@ export const useExpenseCategoryStore = defineStore('expenseCategoryStore', {
         this.isLoading = false;
       }
     },
+    
+    
   },
 });

@@ -29,7 +29,7 @@ export const usePaymentMethodStore = defineStore('paymentMethodStore', {
           console.error('Échec du chargement des paymentMethods avec le statut :', response.status);
         }
       } catch (error) {
-        this.error = 'Erreur lors du chargement des catégories de dépenses';
+        this.error = 'Erreur lors du chargement des paymentMethods';
         console.error(this.error, error.response?.data || error.message);
       } finally {
         this.isLoading = false;
@@ -115,7 +115,7 @@ export const usePaymentMethodStore = defineStore('paymentMethodStore', {
         if (response.status === 200) {
           this.paymentMethod = response.data; 
         } else {
-          console.error('Échec de la récupération de la catégorie de dépenses avec le statut :', response.status);
+          console.error('Échec de la récupération de la paymentMethod avec le statut :', response.status);
         }
       } catch (error) {
         this.error = 'Erreur lors de la récupération de la paymentMethod';

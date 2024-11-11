@@ -1,7 +1,7 @@
 <template>
   <div>
     <h2>Liste des catégories de dépenses</h2>
-    <button @click="goToAddCategory" class="btn btn-primary mb-3">Ajouter une catégorie de dépense</button>
+    <button @click="goToAddCategory" class="btn btn-primary mb-3">Ajouter</button>
     
     <p v-if="expenseCategoryStore.successMessage" class="alert alert-success">{{ expenseCategoryStore.successMessage }}</p>
     <p v-if="expenseCategoryStore.error" class="alert alert-danger">{{ expenseCategoryStore.error }}</p>

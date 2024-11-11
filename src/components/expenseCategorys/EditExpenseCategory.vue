@@ -10,7 +10,7 @@
               type="text"
               class="form-control"
               id="name"
-              placeholder="Entrez le nom de la catégorie"
+              placeholder="Entrez le nom "
               required
             />
           </div>
@@ -48,7 +48,7 @@
   const name = ref('');
   const status = ref(true);
   
-  const loadCategory = async () => {
+  const loadExpenseCategories = async () => {
     await expenseCategoryStore.getExpenseCategoryById(route.params.id);
     const category = expenseCategoryStore.expenseCategory;
     if (category) {
@@ -70,7 +70,7 @@
     router.push({ name: 'expenseCategory' });
   };
   
-  onMounted(loadCategory);
+  onMounted(loadExpenseCategories);
   </script>
   
   <style scoped>
