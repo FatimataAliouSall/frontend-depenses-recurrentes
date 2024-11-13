@@ -56,8 +56,8 @@
               class="form-select" 
               :class="{ 'is-invalid': errors.role }"
             >
-              <option value="admin">Admin</option>
-              <option value="utilisateur">Utilisateur</option>
+              <option value="Admin">Admin</option>
+              <option value="Menager">Menager</option>
             </select>
             <div v-if="errors.role" class="invalid-feedback">
               {{ errors.role }}
@@ -123,10 +123,15 @@
   });
   
   const errors = ref({});
-  
   const handleSubmit = async () => {
-    try {
-      await userStore.addUser(user.value);
+    try { 
+      await userStore.addUser({
+        username:user.value.username,
+        email:user.value.email,
+        password:user.value.password,
+        role:user.value.role,
+        status:user.value.status,
+      });
       router.push({ name: 'user' });
     } catch (error) {
       if (error.response && error.response.status === 422) {

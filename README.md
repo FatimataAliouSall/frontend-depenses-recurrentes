@@ -1,35 +1,84 @@
-# gestion des dépenses recurrente
+# Gestion des dépenses récurrentes
+Une application web pour gérer efficacement les dépenses récurrentes, les catégories de dépenses, les méthodes de paiement, les utilisateurs et la planification des paiements. Ce projet est construit avec Vue.js pour le frontend et Node.js (avec Prisma) pour le backend.
 
-This template should help get you started developing with Vue 3 in Vite.
+## Fonctionnalités
 
-## Recommended IDE Setup
+Utilisateur
+- Ajout utilisateurs : Ajouter de nouveaux utilisateurs.
+- Modification utilisateurs : Modifier les utilisateurs existants.
+- Suppression Utilisateurs : Supprimer les utilisateurs.
+- Affichage la liste des utilisateurs : Visualiser tous les utilisateurs disponibles.
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+Catégorie de dépense
+- Ajout catégories : Ajouter de nouvelles Catégories.
+- Modification catégories : Modifier les catégories existantes.
+- Suppression catégories : Supprimer les catégories.
+- Affichage la liste des catégories : Visualiser toutes les catégories disponibles.
 
-## Customize configuration
+Dépense
+- Ajout dépenses : Ajouter de nouvelles dépenses.
+- Modification dépenses : Modifier les dépenses existantes.
+- Suppression dépense : Supprimer les dépenses.
+- Affichage la liste des dépenses : Visualiser toutes les dépenses disponibles.
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+Méthode de paiement
+- Ajout méthodes de paiements : Ajouter de nouvelles méthodes de paiements.
+- Modification méthode de paiements : Modifier les méthode de paiements existantes.
+- Suppression méthodes de paiements : Supprimer les méthodes de paiements.
+- Affichage la liste des méthode de paiements : Visualiser toutes les méthode de paiements 
+disponibles.
 
-## Project Setup
+Paiement
+- Ajout paiements : Ajouter de nouveaux paiements.
+- Modification paiements : Modifier les paiements existants.
+- Suppression paiements : Supprimer les paiements.
+- Affichage la liste des paiements : Visualiser toutes les  paiements disponibles.
 
-```sh
-npm install
+Planification
+- Ajout planifications : Ajouter de nouvelles planifications.
+- Modification planifications : Modifier les planifications existantes.
+- Suppression planifications : Supprimer les planifications.
+- Affichage la liste des planifications : Visualiser toutes les  planifications disponibles.
+
+## Technologies utilisées
+
+- Vue.js 3 avec Composition API
+- Pinia pour la gestion des états
+- Vue Router pour la navigation
+- Bootstrap 5 pour le design
+- Vite pour le build
+
+## Prérequis
+
+- Node.js
+- Vue CLI
+
+## Étapes d'installation
+
+1. Cloner le repository :
+
+```bash
+git clone https://github.com/FatimataAliouSall/frontend-depenses-recurrentes.git
+cd frontend-depenses-recurrentes
+
 ```
 
-### Compile and Hot-Reload for Development
+2. Installer les dépendances :
 
-```sh
-npm run dev
+```bash
+npm install 
+
 ```
 
-### Compile and Minify for Production
+3. Lancer le serveur de développement :
 
-```sh
-npm run build
+```bash
+npm run dev 
+
 ```
 
-### Lint with [ESLint](https://eslint.org/)
+L'application sera accessible à l'adresse http://localhost:3000.
 
-```sh
-npm run lint
-```
+## Auteur
+
+[- Fatimata Aliou Sall - Développeuse full stack](https://github.com/FatimataAliouSall)

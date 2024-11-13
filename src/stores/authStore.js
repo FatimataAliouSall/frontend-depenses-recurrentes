@@ -6,36 +6,46 @@ export const useAuthStore = defineStore('auth', {
     isAuthenticated: false,
     user: null,
     token: null,
+    loginErrors: [], // Stocker les erreurs de login
   }),
   actions: {
     async login(usernameOrEmail, password) {
       try {
-        const response = await axios.post('http://localhost:3000/api/auth/login', {
+        const response = await axios.post('http://localhost:3000/api/login', {
           username: usernameOrEmail,
           password,
         });
 
-        // Log the complete response for debugging
-        console.log('Full response:', response.data);
-
-        // Destructure the tokens properly
+        // Vérifiez la réponse et assurez-vous qu'elle contient le token, l'ID utilisateur et le nom d'utilisateur
         const { token, userId, username } = response.data;
+        if (!token || !userId || !username) {
+          throw new Error('Données de connexion incorrectes reçues');
+        }
 
-        console.log('Token received:', token);
-
+        // Mettre à jour l'état d'authentification et stocker le token
         this.isAuthenticated = true;
         this.token = token;
-        this.user = { userId, username }; // Stocker les informations utilisateur
+        this.user = { userId, username };
         localStorage.setItem('authToken', token);
-
-        // Add the token to Axios headers
         axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        
+        // Réinitialiser les erreurs de connexion
+        this.loginErrors = [];
       } catch (error) {
+        // Réinitialisez l'état en cas d'erreur
         this.isAuthenticated = false;
         this.user = null;
         this.token = null;
-        console.error('Login error:', error.response ? error.response.data : error.message);
-        throw new Error('Login failed.');
+
+        // Vérifiez et enregistrez les erreurs spécifiques pour les afficher
+        if (error.response && error.response.data && error.response.data.errors) {
+          this.loginErrors = error.response.data.errors.map(err => err.msg);
+        } else {
+          this.loginErrors = ['La connexion a échoué.'];
+        }
+
+        console.error('Erreur de connexion:', this.loginErrors);
+        throw new Error('La connexion a échoué.');
       }
     },
 
@@ -44,7 +54,7 @@ export const useAuthStore = defineStore('auth', {
       this.user = null;
       this.token = null;
       localStorage.removeItem('authToken');
-      delete axios.defaults.headers.common['Authorization']; // Remove token from Axios headers
+      delete axios.defaults.headers.common['Authorization'];
     },
 
     checkAuth() {
@@ -52,7 +62,6 @@ export const useAuthStore = defineStore('auth', {
       if (token) {
         this.isAuthenticated = true;
         this.token = token;
-        // Vous pouvez également récupérer les informations de l'utilisateur ici si nécessaire
         axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       } else {
         this.isAuthenticated = false;

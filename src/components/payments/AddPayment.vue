@@ -70,15 +70,15 @@
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { usePaymentStore } from '@/stores/PaymentStore';
-import { useExpenseStore } from '@/stores/ExpenseStore';
-import { usePaymentMethodStore } from '@/stores/PaymentMethodStore';
-import { usePlanningStore } from '@/stores/PlanningStore';
+// import { useExpenseStore } from '@/stores/ExpenseStore';
+// import { usePaymentMethodStore } from '@/stores/PaymentMethodStore';
+// import { usePlanningStore } from '@/stores/PlanningStore';
 
 const router = useRouter();
 const paymentStore = usePaymentStore();
-const expenseStore = useExpenseStore();
-const planningStore = usePlanningStore();
-const paymentMethodStore = usePaymentMethodStore();
+// const expenseStore = useExpenseStore();
+// const planningStore = usePlanningStore();
+// const paymentMethodStore = usePaymentMethodStore();
 
 const form = ref({
   amount: '',
@@ -86,12 +86,12 @@ const form = ref({
   reference: '',
   planningId: '',
   paymentMethodId: '',
-  expenseId: '',
+  // expenseId: '',
 });
 
-const plannings = ref([]);
-const paymentMethods = ref([]);
-const expenses = ref([]);
+// const plannings = ref([]);
+// const paymentMethods = ref([]);
+// const expenses = ref([]);
 
 onMounted(async () => {
   //plannings.value = await planningStore.loadPlannings();
@@ -109,7 +109,7 @@ const submitPayment = async () => {
       reference: form.value.reference,
       planningId: form.value.planningId,
       paymentMethodId: form.value.paymentMethodId,
-      expenseId: form.value.expenseId,
+      // expenseId: form.value.expenseId,
     });
     await paymentStore.loadPayments();
     router.push({ name: 'payments' });

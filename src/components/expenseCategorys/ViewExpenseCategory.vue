@@ -36,7 +36,7 @@ const route = useRoute();
 const router = useRouter();
 const categoryId = route.params.id;
 
-const category = ref()
+// const category = ref()
 const expenseCategoryStore = useExpenseCategoryStore();
 onMounted( async() => {
  category.value = await expenseCategoryStore.getExpenseCategoryById(categoryId);
@@ -50,7 +50,7 @@ const goBack = () => {
 
 const isLoading = computed(() => expenseCategoryStore.isLoading);
 const error = computed(() => expenseCategoryStore.error);
-// const category = computed(() =>  expenseCategoryStore.expenseCategory);
+const category = computed(() =>  expenseCategoryStore.expenseCategory);
 // console.log(category.value);
 
 </script>

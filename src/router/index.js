@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import Login from '@components/Login.vue';
+// import Login from '@components/Login.vue';
 import Dashboard from '@views/Dashboard.vue';
 import User from '@/components/users/ListUser.vue';
 import AddUser from '@/components/users/AddUser.vue';
@@ -11,7 +11,7 @@ import EditExpense from '@/components/expenses/EditExpense.vue';
 import ViewExpense from '@/components/expenses/ViewExpense.vue';
 import Payments from '@/components/payments/ListPayment.vue';
 import AddPayment from '@/components/payments/AddPayment.vue';
-// import EditPayment from '@/components/payments/EditPayment.vue';
+import EditPayment from '@/components/payments/EditPayment.vue';
 // import ViewPayment from '@/components/payments/ViewPayment.vue';
 import Planning from '@/components/plannings/ListPlanning.vue';
 import AddPlanning from '@/components/plannings/AddPlanning.vue';
@@ -29,7 +29,7 @@ import Home from '@/views/Home.vue';
 
 const routes = [
   { path: '/', name: 'home', component: Home },
-  { path: '/login', name: 'login', component: Login },
+  // { path: '/login', name: 'login', component: Login },
   {
     path: '/dashboard',
     name: 'dashboard',
@@ -45,7 +45,7 @@ const routes = [
       { path: 'expenses/view/:id', name: 'viewExpense', component: ViewExpense, props: true },
       { path: 'payments', name: 'payments', component: Payments },
       { path: 'payments/add', name: 'addPayment', component: AddPayment },
-      // { path: 'payments/edit/:id', name: 'editPayment', component: EditPayment, props: true },
+      { path: 'payments/edit/:id', name: 'editPayment', component: EditPayment, props: true },
       // { path: 'payments/view/:id', name: 'viewPayment', component: ViewPayment, props: true },
       { path: 'planning', name: 'planning', component: Planning },
       { path: 'planning/add', name: 'addPlanning', component: AddPlanning },

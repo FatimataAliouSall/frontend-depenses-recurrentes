@@ -12,7 +12,7 @@
       <div class="carousel-caption d-none d-md-block">
         <h5>Gestion De Depenses</h5>
         <!-- <p>Some representative placeholder content for the first slide.</p> -->
-        <RouterLink to="/login" class="btn btn-info">Se Connecter</RouterLink>
+        <RouterLink to="/dashboard" class="btn btn-info">Découvrir</RouterLink>
       </div>
     
   </div>
@@ -30,6 +30,6 @@
 
 .carousel-item .carousel-caption{
     padding: 20px;
-    background-color: rgba(0, 0, 139, 0.642);
+    /* background-color: rgba(0, 0, 139, 0.642); */
 }
 </style>

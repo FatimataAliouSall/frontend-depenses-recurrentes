@@ -38,10 +38,11 @@ const route = useRoute();
 const router = useRouter();
 const methodId = route.params.id;
 
-const paymentMethod = ref();
+// const paymentMethod = ref();
 const paymentMethodStore = usePaymentMethodStore();
 onMounted(async () => {
-  paymentMethod.value = await paymentMethodStore.getPaymentMethodById(methodId);
+  // paymentMethod.value = await paymentMethodStore.getPaymentMethodById(methodId);
+  await paymentMethodStore.getPaymentMethodById(methodId);
 });
 
 const goBack = () => {
@@ -50,6 +51,8 @@ const goBack = () => {
 
 const isLoading = computed(() => paymentMethodStore.isLoading);
 const error = computed(() => paymentMethodStore.error);
+
+const paymentMethod = computed(() => paymentMethodStore.paymentMethod)
 </script>
 
 <style scoped>
