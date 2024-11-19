@@ -6,7 +6,16 @@ import { createPinia } from 'pinia';
 import App from './App.vue';
 import router from './router';
 
+// Importer le store d'authentification
+import { useAuthStore } from './stores/authStore.js';
+
 const app = createApp(App);
-app.use(createPinia());
+const pinia = createPinia();
+app.use(pinia);
 app.use(router);
+
+// Vérifier l'état d'authentification avant le montage de l'application
+const authStore = useAuthStore();
+authStore.checkAuth();
+
 app.mount('#app');

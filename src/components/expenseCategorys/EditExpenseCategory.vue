@@ -40,6 +40,7 @@
   import { ref, onMounted } from 'vue';
   import { useExpenseCategoryStore } from '@/stores/expenseCategoryStore';
   import { useRoute, useRouter } from 'vue-router';
+  import Swal from 'sweetalert2';
   
   const expenseCategoryStore = useExpenseCategoryStore();
   const route = useRoute();
@@ -58,12 +59,33 @@
   };
   
   const submitForm = async () => {
-    await expenseCategoryStore.updateExpenseCategory({
-      id: route.params.id,
-      name: name.value,
-      status: status.value,
-    });
-    router.push({ name: 'expenseCategory' });
+    try {
+      await expenseCategoryStore.updateExpenseCategory({
+        id: route.params.id,
+        name: name.value,
+        status: status.value,
+      });
+
+      // Afficher une alerte de succès
+      Swal.fire({
+        icon: 'success',
+        title: 'Catégorie mise à jour',
+        text: `La catégorie "${name.value}" a été mise à jour avec succès.`,
+        confirmButtonText: 'OK',
+      }).then(() => {
+        router.push({ name: 'expenseCategory' });
+      });
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour de la catégorie :', error);
+
+      // Afficher une alerte d'erreur
+      Swal.fire({
+        icon: 'error',
+        title: 'Erreur',
+        text: 'Une erreur est survenue lors de la mise à jour de la catégorie.',
+        confirmButtonText: 'OK',
+      });
+    }
   };
   
   const goBack = () => {
@@ -71,7 +93,8 @@
   };
   
   onMounted(loadExpenseCategories);
-  </script>
+</script>
+
   
   <style scoped>
   h2 {

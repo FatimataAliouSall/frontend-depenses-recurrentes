@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
-// import Login from '@components/Login.vue';
+import { useAuthStore } from '@/stores/authStore';
+import Login from '@components/Login.vue';
 import Dashboard from '@views/Dashboard.vue';
 import User from '@/components/users/ListUser.vue';
 import AddUser from '@/components/users/AddUser.vue';
@@ -25,11 +26,11 @@ import ExpenseCategory from '@/components/expenseCategorys/ListExpenseCategory.v
 import AddExpenseCategory from '@/components/expenseCategorys/AddExpenseCategory.vue';
 import EditExpenseCategory from '@/components/expenseCategorys/EditExpenseCategory.vue';
 import ViewExpenseCategory from '@/components/expenseCategorys/ViewExpenseCategory.vue';
-import Home from '@/views/Home.vue';
+// import Home from '@/views/Home.vue';
 
 const routes = [
-  { path: '/', name: 'home', component: Home },
-  // { path: '/login', name: 'login', component: Login },
+  // { path: '/', name: 'home', component: Home },
+  { path: '/', name: 'login', component: Login },
   {
     path: '/dashboard',
     name: 'dashboard',
@@ -68,4 +69,13 @@ const router = createRouter({
   routes,
 });
 
+router.beforeEach((to, from, next) => {
+  const authStore = useAuthStore();
+  if (to.meta.requiresAuth && !authStore.isAuthenticated) {
+    next({ name: 'login' });
+  } else {
+    next();
+  }
+});
 export default router;
+

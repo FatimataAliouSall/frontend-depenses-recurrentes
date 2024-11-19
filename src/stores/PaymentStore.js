@@ -3,7 +3,7 @@ import axios from 'axios';
 
 export const usePaymentStore = defineStore('paymentStore', {
   state: () => ({
-    expenses: [],
+    // expenses: [],
     paymentMethods: [],
     plannings: [],
     payments: [],
@@ -24,6 +24,7 @@ export const usePaymentStore = defineStore('paymentStore', {
 
   actions: {
     async loadPayments() {
+      this.payments = [];
       this.isLoading = true;
       this.error = null;
       try {

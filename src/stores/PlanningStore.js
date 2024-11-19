@@ -21,6 +21,7 @@ export const usePlanningStore = defineStore('planningStore', {
 
   actions: {
     async loadPlannings() {
+      this.plannings = [];
       this.isLoading = true;
       this.error = null;
       try {

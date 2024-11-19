@@ -14,6 +14,9 @@ export const useUserStore = defineStore('userStore', {
 
   actions: {
     async loadUserData() {
+      this.users = [];
+      this.isLoading = true;
+      this.error = null;
       try {
         const response = await axios.get('http://localhost:3000/api/users');
         if (response.status === 200) {

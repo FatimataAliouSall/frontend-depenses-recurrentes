@@ -31,7 +31,7 @@
             <strong>Date de fin :</strong> {{ expense.endDate }}
           </div>
           <div class="detail-item">
-            <strong>Catégorie de dépense :</strong> {{ expense.category.name }}
+            <!-- <strong>Catégorie de dépense :</strong> {{ expense.category.name }} -->
           </div>
         </div>
         

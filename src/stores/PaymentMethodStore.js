@@ -19,6 +19,7 @@ export const usePaymentMethodStore = defineStore('paymentMethodStore', {
 
   actions: {
     async loadPaymentMethods() {
+      this.paymentMethods = [];
       this.isLoading = true;
       this.error = null;
       try {
@@ -108,7 +109,7 @@ export const usePaymentMethodStore = defineStore('paymentMethodStore', {
     },
     async getPaymentMethodById(id) {
       this.isLoading = true;
-      this.error = null;
+      this.error = null;                                                                                                                                      
 
       try {
         const response = await axios.get(`http://localhost:3000/api/payment-methods/${id}`);

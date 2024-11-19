@@ -19,7 +19,7 @@
           <td>{{ payment.amount }}</td>
           <td>{{ new Date(payment.paymentDate).toLocaleDateString() }}</td>
           <td>{{ payment.reference || 'N/A' }}</td>
-          <td>{{ payment.user?.username || 'N/A' }}</td>
+          <!-- <td>{{ payment.user?.username || 'N/A' }}</td> -->
           <td>{{ payment.planning?.name || 'N/A' }}</td>
           <td>{{ payment.paymentMethod?.name || 'N/A' }}</td>
           <td>

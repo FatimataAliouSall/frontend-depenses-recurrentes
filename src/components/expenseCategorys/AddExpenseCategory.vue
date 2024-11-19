@@ -58,6 +58,7 @@
 import { ref } from 'vue';
 import { useExpenseCategoryStore } from '@/stores/expenseCategoryStore.js';
 import { useRouter } from 'vue-router';
+import Swal from 'sweetalert2';
 
 const expenseCategoryStore = useExpenseCategoryStore();
 const router = useRouter();
@@ -66,8 +67,29 @@ const name = ref('');
 const status = ref(true);
 
 const submitForm = async () => {
-  await expenseCategoryStore.addExpenseCategory({ name: name.value, status: status.value });
-  router.push({ name: 'expenseCategory' });
+  try {
+    await expenseCategoryStore.addExpenseCategory({ name: name.value, status: status.value });
+
+    // Afficher une alerte de succès
+    Swal.fire({
+      icon: 'success',
+      title: 'Catégorie ajoutée',
+      text: `La catégorie "${name.value}" a été ajoutée avec succès.`,
+      confirmButtonText: 'OK',
+    }).then(() => {
+      router.push({ name: 'expenseCategory' });
+    });
+  } catch (error) {
+    console.error('Erreur lors de l\'ajout de la catégorie :', error);
+
+    // Afficher une alerte d'erreur
+    Swal.fire({
+      icon: 'error',
+      title: 'Erreur',
+      text: 'Une erreur est survenue lors de l\'ajout de la catégorie.',
+      confirmButtonText: 'OK',
+    });
+  }
 };
 
 const goBack = () => {

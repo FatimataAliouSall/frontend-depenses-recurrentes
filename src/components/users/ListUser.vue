@@ -44,6 +44,7 @@
 import { onMounted, computed } from 'vue';
 import { useUserStore } from '@/stores/UserStore';
 import { useRouter } from 'vue-router';
+import Swal from 'sweetalert2';
 
 const userStore = useUserStore();
 const router = useRouter();
@@ -67,17 +68,43 @@ const viewUser = (userId) => {
 };
 
 const deleteUser = async (userId) => {
-  const confirmDelete = window.confirm("Êtes-vous sûr de vouloir supprimer cet utilisateur ?");
-  
-  if (confirmDelete) {
-    await userStore.removeUser(userId);
-    await fetchUsers();
+  // Afficher une alerte de confirmation avant la suppression
+  const result = await Swal.fire({
+    title: 'Êtes-vous sûr ?',
+    text: "Cette action est irréversible.",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Oui, supprimer',
+    cancelButtonText: 'Annuler',
+  });
+
+  if (result.isConfirmed) {
+    try {
+      await userStore.removeUser(userId);
+      await fetchUsers();
+      
+      // Afficher une alerte de succès
+      Swal.fire({
+        icon: 'success',
+        title: 'Utilisateur supprimé',
+        text: 'L\'utilisateur a été supprimé avec succès.',
+        confirmButtonText: 'OK',
+      });
+    } catch (error) {
+      console.error("Erreur lors de la suppression de l'utilisateur :", error);
+      
+      // Afficher une alerte d'erreur
+      Swal.fire({
+        icon: 'error',
+        title: 'Erreur',
+        text: 'Une erreur est survenue lors de la suppression de l\'utilisateur.',
+        confirmButtonText: 'OK',
+      });
+    }
   }
 };
 
-
 onMounted(fetchUsers);
-
 </script>
 
 <style scoped>

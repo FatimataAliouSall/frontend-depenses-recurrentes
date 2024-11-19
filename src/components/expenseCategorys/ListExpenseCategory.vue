@@ -35,6 +35,7 @@
 import { onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useExpenseCategoryStore } from '@/stores/expenseCategoryStore.js';
+import Swal from 'sweetalert2';
 
 const expenseCategoryStore = useExpenseCategoryStore();
 const router = useRouter();
@@ -59,20 +60,45 @@ const viewCategory = (categoryId) => {
 };
 
 const deleteCategory = async (categoryId) => {
-  const confirmDelete = window.confirm("Êtes-vous sûr de vouloir supprimer cette catégorie ?");
-  
-  if (confirmDelete) {
+  // Afficher une alerte de confirmation avant la suppression
+  const result = await Swal.fire({
+    title: 'Êtes-vous sûr ?',
+    text: "Cette action est irréversible.",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Oui, supprimer',
+    cancelButtonText: 'Annuler',
+  });
+
+  if (result.isConfirmed) {
     try {
       await expenseCategoryStore.removeExpenseCategory(categoryId);
       await fetchExpenseCategories();
+      
+      // Afficher une alerte de succès
+      Swal.fire({
+        icon: 'success',
+        title: 'Catégorie supprimée',
+        text: 'La catégorie a été supprimée avec succès.',
+        confirmButtonText: 'OK',
+      });
     } catch (error) {
       console.error("Erreur lors de la suppression de la catégorie :", error);
+      
+      // Afficher une alerte d'erreur
+      Swal.fire({
+        icon: 'error',
+        title: 'Erreur',
+        text: 'Une erreur est survenue lors de la suppression de la catégorie.',
+        confirmButtonText: 'OK',
+      });
     }
   }
 };
 
 onMounted(fetchExpenseCategories);
 </script>
+
 
 <style scoped>
 h2 {

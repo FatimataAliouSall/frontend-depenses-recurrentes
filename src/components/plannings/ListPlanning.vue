@@ -1,12 +1,24 @@
 <template>
   <div>
     <h2>Liste des planifications</h2>
+    
+    <!-- Champ de recherche par nom -->
+    <div class="mb-3">
+      <input
+        type="text"
+        v-model="searchQuery"
+        placeholder="Rechercher par nom de planification"
+        class="form-control w-50"
+      />
+    </div>
+
     <button @click="addPlanning" class="btn btn-primary mb-3">Ajouter</button>
+    
     <table class="table table-striped">
       <thead>
         <tr>
           <th>Nom</th>
-          <th>Date debut</th>
+          <th>Date début</th>
           <th>Date fin</th>
           <th>Montant</th>
           <th>Dépense</th>
@@ -14,7 +26,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="planning in plannings" :key="planning.id">
+        <tr v-for="planning in filteredPlannings" :key="planning.id">
           <td>{{ planning.name }}</td>
           <td>{{ new Date(planning.startDate).toLocaleDateString() }}</td>
           <td>{{ new Date(planning.endDate).toLocaleDateString() }}</td>
@@ -32,12 +44,14 @@
 </template>
 
 <script setup>
-import { onMounted, computed } from 'vue';
+import { onMounted, computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { usePlanningStore } from '@/stores/PlanningStore.js';
 
 const planningStore = usePlanningStore();
 const router = useRouter();
+
+const searchQuery = ref('');  // Variable pour la recherche
 
 const fetchPlannings = async () => {
   await planningStore.loadPlannings();
@@ -48,10 +62,11 @@ const addPlanning = () => {
 };
 
 const editPlanning = (planningId) => {
-  router.push({ name: 'editPlanning', params: { id: planningId }})
+  router.push({ name: 'editPlanning', params: { id: planningId } });
 };
+
 const viewPlanning = (planningId) => {
-  router.push({ name: 'viewPlanning', params: { id: planningId }})
+  router.push({ name: 'viewPlanning', params: { id: planningId } });
 };
 
 const deletePlanning = async (planningId) => {
@@ -60,16 +75,12 @@ const deletePlanning = async (planningId) => {
   if (confirmDelete) {
     try {
       console.log("Début de la suppression de la planification avec ID:", planningId);
-      
       await planningStore.removePlanning(planningId);  
-      
       console.log("Suppression réussie, actualisation de la liste...");
-      
       await fetchPlannings();  
       alert("Planification supprimée avec succès.");
     } catch (error) {
       console.error("Erreur lors de la suppression de la planification :", error);
-      
       if (error.response && error.response.data && error.response.data.message) {
         alert(error.response.data.message + "\n" + error.response.data.suggestion);
       } else {
@@ -81,8 +92,13 @@ const deletePlanning = async (planningId) => {
 
 onMounted(fetchPlannings);
 
-
+// Liste des plannings avec un filtre de recherche
 const plannings = computed(() => planningStore.plannings);
+const filteredPlannings = computed(() => {
+  return plannings.value.filter(planning => 
+    planning.name.toLowerCase().includes(searchQuery.value.toLowerCase())
+  );
+});
 </script>
 
 <style scoped>

@@ -59,10 +59,12 @@ import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useExpenseStore } from '@/stores/ExpenseStore';
 import { useExpenseCategoryStore } from '@/stores/expenseCategoryStore';
+import Swal from 'sweetalert2';
 
 const router = useRouter();
 const ExpenseStore = useExpenseStore();
 const categoryStore = useExpenseCategoryStore();
+
 onMounted(() => {
   categoryStore.loadExpenseCategories();
 });
@@ -87,12 +89,29 @@ const submitExpense = async () => {
       expenseCategoryId: expense.value.categoryId 
     });
 
-    
+    // Recharger les dépenses après l'ajout
     await ExpenseStore.loadExpenses();
 
+    // Afficher une alerte de succès
+    Swal.fire({
+      icon: 'success',
+      title: 'Dépense ajoutée',
+      text: 'La dépense a été ajoutée avec succès.',
+      confirmButtonText: 'OK'
+    });
+
+    // Rediriger vers la page des dépenses
     router.push({ name: 'expenses' });
   } catch (error) {
     console.error("Erreur lors de l'ajout de la dépense:", error);
+
+    // Afficher une alerte d'erreur
+    Swal.fire({
+      icon: 'error',
+      title: 'Erreur',
+      text: 'Une erreur est survenue lors de l\'ajout de la dépense.',
+      confirmButtonText: 'OK'
+    });
   }
 };
 

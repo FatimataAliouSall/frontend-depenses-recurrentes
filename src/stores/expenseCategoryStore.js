@@ -17,7 +17,7 @@ export const useExpenseCategoryStore = defineStore('expenseCategoryStore', {
 
   actions: {
     async loadExpenseCategories() {
-      
+      this.expenseCategories = [];
       this.isLoading = true;
       this.error = null;
       try {

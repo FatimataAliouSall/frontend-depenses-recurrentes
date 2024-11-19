@@ -5,7 +5,7 @@
       <form @submit.prevent="submitForm">
         <div class="row g-2">
           <div class="col-md-6">
-            <label for="title" class="form-label">Titre</label>
+            <label for="title" class="form-label">Titre :</label>
             <input
               type="text"
               id="title"
@@ -15,7 +15,7 @@
             />
           </div>
           <div class="col-md-6">
-            <label for="amount" class="form-label">Montant</label>
+            <label for="amount" class="form-label">Montant :</label>
             <input
               type="number"
               id="amount"
@@ -25,7 +25,7 @@
             />
           </div>
           <div class="col-md-6">
-            <label for="frequency" class="form-label">Fréquence</label>
+            <label for="frequency" class="form-label">Fréquence :</label>
             <select id="frequency" v-model="expense.frequency" class="form-select">
               <option value="Mensuel">Mensuel</option>
               <option value="Annuel">Annuel</option>
@@ -33,8 +33,8 @@
             </select>
           </div>
           <div class="col-md-6">
-            <label for="categoryId" class="form-label">Catégorie</label>
-            <select id="categoryId" v-model="expense.categoryId" class="form-select">
+            <label for="categoryId" class="form-label">Catégorie :</label>
+            <select id="categoryId" v-model="expense.categoryId" class="form-select" required>
               <option value="" disabled>Choisir une catégorie</option>
               <option v-for="category in categoryStore.expenseCategories" :key="category.id" :value="category.id">
                 {{ category.name }}
@@ -42,7 +42,7 @@
             </select>
           </div>
           <div class="col-md-6">
-            <label for="startDate" class="form-label">Date de début</label>
+            <label for="startDate" class="form-label">Date de début :</label>
             <input
               type="date"
               id="startDate"
@@ -52,7 +52,7 @@
             />
           </div>
           <div class="col-md-6">
-            <label for="endDate" class="form-label">Date de fin</label>
+            <label for="endDate" class="form-label">Date de fin :</label>
             <input
               type="date"
               id="endDate"
@@ -79,6 +79,7 @@ import { ref, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useExpenseStore } from '@/stores/ExpenseStore';
 import { useExpenseCategoryStore } from '@/stores/expenseCategoryStore';
+import Swal from 'sweetalert2';
 
 const router = useRouter();
 const route = useRoute();
@@ -91,7 +92,7 @@ const expense = ref({
   frequency: '',
   startDate: '',
   endDate: '',
-  categoryId: null
+  categoryId: ''
 });
 
 onMounted(async () => {
@@ -113,13 +114,32 @@ onMounted(async () => {
 
 const submitForm = async () => {
   try {
+    // Mise à jour de la dépense
     await expenseStore.updateExpense({
       id: route.params.id,
       ...expense.value,
     });
+
+    // Afficher une alerte de succès
+    Swal.fire({
+      icon: 'success',
+      title: 'Dépense mise à jour',
+      text: 'La dépense a été mise à jour avec succès.',
+      confirmButtonText: 'OK'
+    });
+
+    // Redirection vers la liste des dépenses
     router.push({ name: 'expenses' });
   } catch (error) {
     console.error("Erreur lors de la mise à jour de la dépense:", error);
+
+    // Afficher une alerte d'erreur
+    Swal.fire({
+      icon: 'error',
+      title: 'Erreur',
+      text: 'Une erreur est survenue lors de la mise à jour de la dépense.',
+      confirmButtonText: 'OK'
+    });
   }
 };
 
@@ -127,6 +147,7 @@ const goBack = () => {
   router.push({ name: 'expenses' });
 };
 </script>
+
 
 <style scoped>
 h2 {

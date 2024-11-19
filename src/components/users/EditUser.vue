@@ -30,8 +30,8 @@
           <div class="mb-2">
             <label for="role" class="form-label">Rôle</label>
             <select id="role" class="form-select" v-model="user.role">
-              <option value="admin">Administrateur</option>
-              <option value="user">Utilisateur</option>
+              <option value="Admin">Administrateur</option>
+              <option value="Menager">Utilisateur</option>
             </select>
           </div>
           
@@ -60,6 +60,7 @@
   import { ref, onMounted } from 'vue';
   import { useRoute, useRouter } from 'vue-router';
   import { useUserStore } from '@/stores/UserStore';
+  import Swal from 'sweetalert2';
   
   const route = useRoute();
   const router = useRouter();
@@ -67,14 +68,48 @@
   const user = ref({});
   
   const fetchUser = async () => {
-    const userId = parseInt(route.params.id);
-    await userStore.getUserById(userId);
-    user.value = { ...userStore.user };
+    try {
+      const userId = parseInt(route.params.id);
+      await userStore.getUserById(userId);
+      user.value = { ...userStore.user };
+    } catch (error) {
+      console.error('Erreur lors du chargement des données de l\'utilisateur :', error);
+  
+      Swal.fire({
+        icon: 'error',
+        title: 'Erreur',
+        text: 'Impossible de charger les informations de l\'utilisateur.',
+        confirmButtonText: 'OK',
+      }).then(() => {
+        router.push({ name: 'user' });
+      });
+    }
   };
   
   const updateUser = async () => {
-    await userStore.updateUser({ ...user.value, id: parseInt(route.params.id) });
-    router.push({ name: 'user' });
+    try {
+      await userStore.updateUser({ ...user.value, id: parseInt(route.params.id) });
+  
+      // Afficher une alerte de succès
+      Swal.fire({
+        icon: 'success',
+        title: 'Utilisateur mis à jour',
+        text: `${user.value.username} a été mis à jour avec succès !`,
+        confirmButtonText: 'OK',
+      }).then(() => {
+        router.push({ name: 'user' });
+      });
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour de l\'utilisateur :', error);
+  
+      // Afficher une alerte d'erreur
+      Swal.fire({
+        icon: 'error',
+        title: 'Erreur',
+        text: 'Une erreur est survenue lors de la mise à jour de l\'utilisateur.',
+        confirmButtonText: 'OK',
+      });
+    }
   };
   
   const goBack = () => {
@@ -83,6 +118,7 @@
   
   onMounted(fetchUser);
   </script>
+  
   
   <style scoped>
   h2 {

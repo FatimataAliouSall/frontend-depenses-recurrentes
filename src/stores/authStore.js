@@ -4,67 +4,94 @@ import axios from 'axios';
 export const useAuthStore = defineStore('auth', {
   state: () => ({
     isAuthenticated: false,
-    user: null,
-    token: null,
-    loginErrors: [], // Stocker les erreurs de login
+    user: null, // Stockage des informations utilisateur
+    role: '', // Rôle de l'utilisateur
+    token: null, // Jeton JWT
+    loginErrors: [], // Gestion des erreurs de connexion
   }),
+
   actions: {
-    async login(usernameOrEmail, password) {
+    // Action pour se connecter
+    async login(email, password) {
+      console.log('Tentative de connexion...');
       try {
         const response = await axios.post('http://localhost:3000/api/login', {
-          username: usernameOrEmail,
+          email,
           password,
         });
 
-        // Vérifiez la réponse et assurez-vous qu'elle contient le token, l'ID utilisateur et le nom d'utilisateur
-        const { token, userId, username } = response.data;
-        if (!token || !userId || !username) {
-          throw new Error('Données de connexion incorrectes reçues');
-        }
+        const { token, userId, username, role } = response.data;
 
-        // Mettre à jour l'état d'authentification et stocker le token
+        // Mise à jour de l'état
         this.isAuthenticated = true;
         this.token = token;
         this.user = { userId, username };
-        localStorage.setItem('authToken', token);
-        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-        
-        // Réinitialiser les erreurs de connexion
+        this.role = role;
         this.loginErrors = [];
+
+        // Stockage local et configuration axios
+        localStorage.setItem('authToken', token);
+        localStorage.setItem('authUser', JSON.stringify(this.user));
+        localStorage.setItem('authRole', this.role);
+        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
+        // console.log(`Connexion réussie. Utilisateur connecté : ${username}, Rôle : ${role}`);
       } catch (error) {
-        // Réinitialisez l'état en cas d'erreur
+        console.error('Erreur lors de la connexion :', error.response?.data || error);
+
+        // Réinitialisation de l'état en cas d'échec
         this.isAuthenticated = false;
         this.user = null;
         this.token = null;
-
-        // Vérifiez et enregistrez les erreurs spécifiques pour les afficher
-        if (error.response && error.response.data && error.response.data.errors) {
-          this.loginErrors = error.response.data.errors.map(err => err.msg);
+        this.role = '';
+        
+        if (error.response?.data?.message) {
+          this.loginErrors = [error.response.data.message];
         } else {
-          this.loginErrors = ['La connexion a échoué.'];
+          this.loginErrors = ['Erreur inconnue lors de la connexion.'];
         }
 
-        console.error('Erreur de connexion:', this.loginErrors);
-        throw new Error('La connexion a échoué.');
+        throw new Error(this.loginErrors[0]);
       }
     },
 
+    // Action pour se déconnecter
     logout() {
+      console.log('Déconnexion...');
       this.isAuthenticated = false;
       this.user = null;
       this.token = null;
+      this.role = '';
+
+      // Nettoyage du stockage local
       localStorage.removeItem('authToken');
+      localStorage.removeItem('authUser');
+      localStorage.removeItem('authRole');
+
       delete axios.defaults.headers.common['Authorization'];
+      console.log('Déconnexion réussie.');
     },
 
+    // Vérification de l'état d'authentification
     checkAuth() {
+      console.log('Vérification de l’état d’authentification...');
       const token = localStorage.getItem('authToken');
-      if (token) {
+      const user = localStorage.getItem('authUser');
+      const role = localStorage.getItem('authRole');
+
+      if (token && user) {
+        console.log('Token et utilisateur trouvés.');
         this.isAuthenticated = true;
         this.token = token;
+        this.user = JSON.parse(user);
+        this.role = role || '';
         axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       } else {
+        console.warn('Aucun token ou utilisateur trouvé. Réinitialisation de l’état.');
         this.isAuthenticated = false;
+        this.user = null;
+        this.token = null;
+        this.role = '';
       }
     },
   },

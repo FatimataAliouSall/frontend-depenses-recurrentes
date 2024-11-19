@@ -1,68 +1,87 @@
 <template>
-  <div>
-    <button 
-      type="button" 
-      @click="goBack" 
-      class="btn btn-secondary d-flex align-items-center me-2"
-    >
-      <i class="fas fa-arrow-left me-2"></i> Retour 
-    </button>
-    <h2>Ajouter un paiement</h2>
-    <form @submit.prevent="submitPayment">
-      <div class="mb-3">
-        <label for="amount" class="form-label">Montant</label>
-        <input
-          v-model="form.amount"
-          type="number"
-          id="amount"
-          class="form-control"
-          required
-        />
+  <div class="d-flex justify-content-center align-items-center vh-100">
+    <div class="card shadow-sm p-3" style="width: 100%; max-width: 480px;">
+      <div class="d-flex align-items-center mb-3">
+        <button 
+          type="button" 
+          @click="goBack" 
+          class="btn btn-secondary d-flex align-items-center me-2"
+        >
+          <i class="fas fa-arrow-left me-2"></i> Retour
+        </button>
       </div>
-
-      <div class="mb-3">
-        <label for="paymentDate" class="form-label">Date de paiement</label>
-        <input
-          v-model="form.paymentDate"
-          type="date"
-          id="paymentDate"
-          class="form-control"
-          required
-        />
-      </div>
-
-      <div class="mb-3">
-        <label for="reference" class="form-label">Référence</label>
-        <input
-          v-model="form.reference"
-          type="text"
-          id="reference"
-          class="form-control"
-        />
-      </div>
-
-      <div class="mb-3">
-        <label for="planning" class="form-label">Planification</label>
-        <select v-model="form.planningId" id="planning" class="form-select" required>
-          <option value="" disabled>Choisir une planification</option>
-          <option v-for="planning in paymentStore.plannings" :key="planning.id" :value="planning.id">
-            {{ planning.name }}
-          </option>
-        </select>
-      </div>
-
-      <div class="mb-3">
-        <label for="paymentMethod" class="form-label">Méthode de paiement</label>
-        <select v-model="form.paymentMethodId" id="paymentMethod" class="form-select" required>
-          <option value="" disabled>Choisir une méthode de paiement</option>
-          <option v-for="method in paymentStore.paymentMethods" :key="method.id" :value="method.id">
-            {{ method.name }}
-          </option>
-        </select>
-      </div>
-
-      <button type="submit" class="btn btn-primary">Ajouter le paiement</button>
-    </form>
+      <h2 class="text-center mb-3">Ajouter un Paiement</h2>
+      <form @submit.prevent="submitPayment">
+        <div class="row g-2">
+          <div class="col-md-6">
+            <label for="amount" class="form-label">Montant</label>
+            <input 
+              type="number" 
+              v-model="form.amount" 
+              id="amount" 
+              class="form-control" 
+              required
+            />
+          </div>
+          <div class="col-md-6">
+            <label for="paymentDate" class="form-label">Date de paiement</label>
+            <input 
+              type="date" 
+              v-model="form.paymentDate" 
+              id="paymentDate" 
+              class="form-control" 
+              required
+            />
+          </div>
+          <div class="col-md-12">
+            <label for="reference" class="form-label">Référence</label>
+            <input 
+              type="text" 
+              v-model="form.reference" 
+              id="reference" 
+              class="form-control" 
+            />
+          </div>
+          <div class="col-md-12">
+            <label for="planning" class="form-label">Planification</label>
+            <select 
+              v-model="form.planningId" 
+              id="planning" 
+              class="form-select" 
+              required
+            >
+              <option value="" disabled>Choisir une planification</option>
+              <option 
+                v-for="planning in paymentStore.plannings" 
+                :key="planning.id" 
+                :value="planning.id"
+              >
+                {{ planning.name }}
+              </option>
+            </select>
+          </div>
+          <div class="col-md-12">
+            <label for="paymentMethod" class="form-label">Méthode de paiement</label>
+            <select 
+              v-model="form.paymentMethodId" 
+              id="paymentMethod" 
+              class="form-select" 
+              required
+            >
+              <option value="" disabled>Choisir une méthode de paiement</option>
+              <option 
+                v-for="method in paymentStore.paymentMethods" 
+                :key="method.id" 
+                :value="method.id"
+              >
+                {{ method.name }}
+              </option>
+            </select>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary mt-3 w-100">Ajouter </button>
+      </form>
+    </div>
   </div>
 </template>
 
@@ -70,15 +89,10 @@
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { usePaymentStore } from '@/stores/PaymentStore';
-// import { useExpenseStore } from '@/stores/ExpenseStore';
-// import { usePaymentMethodStore } from '@/stores/PaymentMethodStore';
-// import { usePlanningStore } from '@/stores/PlanningStore';
+import Swal from 'sweetalert2'; // Import SweetAlert2
 
 const router = useRouter();
 const paymentStore = usePaymentStore();
-// const expenseStore = useExpenseStore();
-// const planningStore = usePlanningStore();
-// const paymentMethodStore = usePaymentMethodStore();
 
 const form = ref({
   amount: '',
@@ -86,18 +100,9 @@ const form = ref({
   reference: '',
   planningId: '',
   paymentMethodId: '',
-  // expenseId: '',
 });
 
-// const plannings = ref([]);
-// const paymentMethods = ref([]);
-// const expenses = ref([]);
-
 onMounted(async () => {
-  //plannings.value = await planningStore.loadPlannings();
-  //paymentMethods.value = await paymentMethodStore.loadPaymentMethods();
-  //expenses.value = await expenseStore.loadExpenses();
-
   await paymentStore.getRequirements();
 });
 
@@ -109,13 +114,25 @@ const submitPayment = async () => {
       reference: form.value.reference,
       planningId: form.value.planningId,
       paymentMethodId: form.value.paymentMethodId,
-      // expenseId: form.value.expenseId,
     });
     await paymentStore.loadPayments();
     router.push({ name: 'payments' });
+
+    // Afficher l'alerte de succès avec SweetAlert2
+    Swal.fire({
+      icon: 'success',
+      title: 'Paiement ajouté avec succès',
+      text: 'Le paiement a été ajouté avec succès!',
+    });
   } catch (error) {
     console.error("Erreur lors de l'ajout du paiement:", error);
-    alert("Une erreur s'est produite lors de l'ajout du paiement.");
+
+    // Afficher l'alerte d'erreur avec SweetAlert2
+    Swal.fire({
+      icon: 'error',
+      title: 'Erreur',
+      text: "Une erreur s'est produite lors de l'ajout du paiement.",
+    });
   }
 };
 
@@ -128,5 +145,21 @@ const goBack = () => {
 h2 {
   color: #333;
   margin-bottom: 1rem;
+}
+
+button {
+  width: 20%;
+}
+
+form .form-label {
+  font-weight: bold;
+}
+
+.card {
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.row g-2 {
+  margin-bottom: 10px;
 }
 </style>
