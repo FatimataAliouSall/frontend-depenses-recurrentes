@@ -72,7 +72,7 @@ const handleLogin = async () => {
       icon: 'success',
       confirmButtonText: 'OK',
     }).then(() => {
-      router.push('/dashboard');
+      router.push('/dashboard/home');
     });
   } catch (error) {
     console.error('Erreur de connexion :', error.message || error);

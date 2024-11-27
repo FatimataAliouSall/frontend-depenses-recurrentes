@@ -17,11 +17,21 @@
             <label for="amount" class="form-label">Montant</label>
             <input 
               type="number" 
-              v-model="form.amount" 
+              v-model.number="form.amount" 
               id="amount" 
               class="form-control" 
+              @input="validateAmount" 
+              :max="maxAmount" 
               required
             />
+            <small v-if="error" class="text-danger">{{ error }}</small>
+            <select v-model="form.unit" class="form-select" id="unit" required>
+                <option value="" disabled>Devise</option>
+                <option value="EUR">Euro (€)</option>
+                <option value="MRU">Ouguiya (UM)</option>
+                <option value="CFA">Franc CFA (CFA)</option>
+                <option value="DZD">Dinar (DZD)</option>
+              </select>
           </div>
           <div class="col-md-6">
             <label for="paymentDate" class="form-label">Date de paiement</label>
@@ -48,6 +58,7 @@
               v-model="form.planningId" 
               id="planning" 
               class="form-select" 
+              @change="fetchPlanningAmount" 
               required
             >
               <option value="" disabled>Choisir une planification</option>
@@ -89,36 +100,67 @@
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { usePaymentStore } from '@/stores/PaymentStore';
-import Swal from 'sweetalert2'; // Import SweetAlert2
+import Swal from 'sweetalert2';
 
 const router = useRouter();
 const paymentStore = usePaymentStore();
 
 const form = ref({
-  amount: '',
+  amount: 0,
+  unit: '',
   paymentDate: '',
   reference: '',
   planningId: '',
   paymentMethodId: '',
 });
 
-onMounted(async () => {
-  await paymentStore.getRequirements();
-});
+const maxAmount = ref(0); // Montant maximum autorisé
+const error = ref('');
+
+// Récupère le montant planifié lorsqu'une planification est sélectionnée
+const fetchPlanningAmount = () => {
+  const selectedPlanning = paymentStore.plannings.find(
+    (planning) => planning.id === form.value.planningId
+  );
+  if (selectedPlanning) {
+    maxAmount.value = selectedPlanning.amount;
+  } else {
+    maxAmount.value = 0;
+  }
+};
+
+// Vérifie que le montant n'excède pas le montant planifié
+const validateAmount = () => {
+  if (form.value.amount > maxAmount.value) {
+    error.value = `Le montant ne peut pas dépasser ${maxAmount.value}.`;
+  } else {
+    error.value = '';
+  }
+};
 
 const submitPayment = async () => {
+  if (form.value.amount > maxAmount.value) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Erreur',
+      text: `Le montant ne peut pas dépasser ${maxAmount.value}.`,
+    });
+    return;
+  }
+
   try {
     await paymentStore.addPayment({
       amount: form.value.amount,
+      unit: form.value.unit,
       paymentDate: form.value.paymentDate,
       reference: form.value.reference,
       planningId: form.value.planningId,
       paymentMethodId: form.value.paymentMethodId,
     });
+
     await paymentStore.loadPayments();
     router.push({ name: 'payments' });
 
-    // Afficher l'alerte de succès avec SweetAlert2
     Swal.fire({
       icon: 'success',
       title: 'Paiement ajouté avec succès',
@@ -127,7 +169,6 @@ const submitPayment = async () => {
   } catch (error) {
     console.error("Erreur lors de l'ajout du paiement:", error);
 
-    // Afficher l'alerte d'erreur avec SweetAlert2
     Swal.fire({
       icon: 'error',
       title: 'Erreur',
@@ -139,6 +180,10 @@ const submitPayment = async () => {
 const goBack = () => {
   router.push({ name: 'payments' });
 };
+
+onMounted(async () => {
+  await paymentStore.getRequirements();
+});
 </script>
 
 <style scoped>
@@ -157,9 +202,5 @@ form .form-label {
 
 .card {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-.row g-2 {
-  margin-bottom: 10px;
 }
 </style>

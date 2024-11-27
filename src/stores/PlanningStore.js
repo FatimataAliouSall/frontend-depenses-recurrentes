@@ -1,4 +1,3 @@
-// stores/PlanningStore.js
 import { defineStore } from 'pinia';
 import axios from 'axios';
 
@@ -10,7 +9,9 @@ export const usePlanningStore = defineStore('planningStore', {
       name: '',
       startDate: '',
       endDate: '',
+      dueDate: '',
       amount: '',
+      unit: '',
       expense: '',
 
     },
@@ -25,8 +26,12 @@ export const usePlanningStore = defineStore('planningStore', {
       this.isLoading = true;
       this.error = null;
       try {
-        const response = await axios.get('http://localhost:3000/api/planning'); 
-        this.plannings = response.data;
+        const response = await axios.get('http://localhost:3000/api/planning');
+        if (response.status === 200) {
+          this.plannings = response.data;
+        } else {
+          console.error('Échec du chargement des planification avec le statut :', response.status);
+        }
       } catch (error) {
         this.error = error.response?.data.message || 'Erreur lors du chargement des plannings';
         console.error(this.error);

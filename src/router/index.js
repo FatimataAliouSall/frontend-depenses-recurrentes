@@ -13,7 +13,7 @@ import ViewExpense from '@/components/expenses/ViewExpense.vue';
 import Payments from '@/components/payments/ListPayment.vue';
 import AddPayment from '@/components/payments/AddPayment.vue';
 import EditPayment from '@/components/payments/EditPayment.vue';
-// import ViewPayment from '@/components/payments/ViewPayment.vue';
+import ViewPayment from '@/components/payments/ViewPayment.vue';
 import Planning from '@/components/plannings/ListPlanning.vue';
 import AddPlanning from '@/components/plannings/AddPlanning.vue';
 import EditPlanning from '@/components/plannings/EditPlanning.vue';
@@ -26,20 +26,27 @@ import ExpenseCategory from '@/components/expenseCategorys/ListExpenseCategory.v
 import AddExpenseCategory from '@/components/expenseCategorys/AddExpenseCategory.vue';
 import EditExpenseCategory from '@/components/expenseCategorys/EditExpenseCategory.vue';
 import ViewExpenseCategory from '@/components/expenseCategorys/ViewExpenseCategory.vue';
-// import Home from '@/views/Home.vue';
+import Home from '@/views/Home.vue';
+import ForgotPassword from '@/ForgotPassword.vue';
+import RessetPassword from '@/RessetPassword.vue';
+import UserProfile from '@/views/UserProfile.vue';
 
 const routes = [
   // { path: '/', name: 'home', component: Home },
   { path: '/', name: 'login', component: Login },
+  { path: '/forgot-password', component: ForgotPassword },
+  { path: '/reset-password', component: RessetPassword },
   {
     path: '/dashboard',
     name: 'dashboard',
     component: Dashboard,
     children: [
+      { path: 'home', name: 'home', component: Home },
       { path: 'user', name: 'user', component: User },
       { path: 'user/add', name: 'addUser', component: AddUser },
       { path: 'user/edit/:id', name: 'editUser', component: EditUser, props: true },
       { path: 'user/view/:id', name: 'viewUser', component: ViewUser, props: true },
+      { path: 'user/profile', name: 'userProfile', component: UserProfile },
       { path: 'expenses', name: 'expenses', component: Expenses },
       { path: 'expenses/add', name: 'addExpense', component: AddExpense },
       { path: 'expenses/edit/:id', name: 'editExpense', component: EditExpense, props: true },
@@ -47,7 +54,7 @@ const routes = [
       { path: 'payments', name: 'payments', component: Payments },
       { path: 'payments/add', name: 'addPayment', component: AddPayment },
       { path: 'payments/edit/:id', name: 'editPayment', component: EditPayment, props: true },
-      // { path: 'payments/view/:id', name: 'viewPayment', component: ViewPayment, props: true },
+      { path: 'payments/view/:id', name: 'viewPayment', component: ViewPayment, props: true },
       { path: 'planning', name: 'planning', component: Planning },
       { path: 'planning/add', name: 'addPlanning', component: AddPlanning },
       { path: 'planning/edit/:id', name: 'editPlanning', component: EditPlanning, props: true },
@@ -78,4 +85,5 @@ router.beforeEach((to, from, next) => {
   }
 });
 export default router;
+
 

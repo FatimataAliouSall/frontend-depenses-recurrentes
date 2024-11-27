@@ -1,8 +1,6 @@
 <template>
   <div>
     <h2>Liste des planifications</h2>
-    
-    <!-- Champ de recherche par nom -->
     <div class="mb-3">
       <input
         type="text"
@@ -13,14 +11,16 @@
     </div>
 
     <button @click="addPlanning" class="btn btn-primary mb-3">Ajouter</button>
-    
+
     <table class="table table-striped">
       <thead>
         <tr>
           <th>Nom</th>
           <th>Date début</th>
           <th>Date fin</th>
+          <th>Date d'échéance</th>
           <th>Montant</th>
+          <th>Devise</th>
           <th>Dépense</th>
           <th>Actions</th>
         </tr>
@@ -30,7 +30,9 @@
           <td>{{ planning.name }}</td>
           <td>{{ new Date(planning.startDate).toLocaleDateString() }}</td>
           <td>{{ new Date(planning.endDate).toLocaleDateString() }}</td>
+          <td>{{ new Date(planning.dueDate).toLocaleDateString() }}</td>
           <td>{{ planning.amount }}</td>
+          <td>{{ planning.unit || 'N/A' }}</td> 
           <td>{{ planning.expense?.title }}</td>
           <td>
             <button @click="editPlanning(planning.id)" class="btn btn-warning btn-sm me-2"><i class="fas fa-edit"></i></button>
@@ -51,7 +53,7 @@ import { usePlanningStore } from '@/stores/PlanningStore.js';
 const planningStore = usePlanningStore();
 const router = useRouter();
 
-const searchQuery = ref('');  // Variable pour la recherche
+const searchQuery = ref(''); 
 
 const fetchPlannings = async () => {
   await planningStore.loadPlannings();
@@ -70,14 +72,16 @@ const viewPlanning = (planningId) => {
 };
 
 const deletePlanning = async (planningId) => {
-  const confirmDelete = window.confirm("Êtes-vous sûr de vouloir supprimer cette planification ?");
-  
+  const confirmDelete = window.confirm(
+    "Êtes-vous sûr de vouloir supprimer cette planification ?"
+  );
+
   if (confirmDelete) {
     try {
       console.log("Début de la suppression de la planification avec ID:", planningId);
-      await planningStore.removePlanning(planningId);  
+      await planningStore.removePlanning(planningId);
       console.log("Suppression réussie, actualisation de la liste...");
-      await fetchPlannings();  
+      await fetchPlannings();
       alert("Planification supprimée avec succès.");
     } catch (error) {
       console.error("Erreur lors de la suppression de la planification :", error);
@@ -92,10 +96,9 @@ const deletePlanning = async (planningId) => {
 
 onMounted(fetchPlannings);
 
-// Liste des plannings avec un filtre de recherche
 const plannings = computed(() => planningStore.plannings);
 const filteredPlannings = computed(() => {
-  return plannings.value.filter(planning => 
+  return plannings.value.filter((planning) =>
     planning.name.toLowerCase().includes(searchQuery.value.toLowerCase())
   );
 });

@@ -16,22 +16,7 @@
             <strong>Titre :</strong> {{ expense.title }}
           </div>
           <div class="detail-item">
-            <strong>Montant :</strong> {{ expense.amount }}
-          </div>
-          <div class="detail-item">
-            <strong>Fréquence :</strong> {{ expense.frequency }}
-          </div>
-          <div class="detail-item">
-            <strong>Date de création :</strong> {{ expense.dateCreate }}
-          </div>
-          <div class="detail-item">
-            <strong>Date de début :</strong> {{ expense.startDate }}
-          </div>
-          <div class="detail-item">
-            <strong>Date de fin :</strong> {{ expense.endDate }}
-          </div>
-          <div class="detail-item">
-            <!-- <strong>Catégorie de dépense :</strong> {{ expense.category.name }} -->
+            <strong>Catégorie de dépense :</strong> {{ expense.category.name }}
           </div>
         </div>
         

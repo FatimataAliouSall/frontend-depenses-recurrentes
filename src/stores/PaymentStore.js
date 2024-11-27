@@ -10,6 +10,7 @@ export const usePaymentStore = defineStore('paymentStore', {
     payment: {
       id: null,
       amount: '',
+      unit: '',
       paymentDate: '',
       reference: '',
       userId: null,
@@ -43,7 +44,7 @@ export const usePaymentStore = defineStore('paymentStore', {
     },
 
     async addPayment(payment) {
-      if (!payment.amount || !payment.paymentDate) {
+      if (!payment.amount) {
         this.error = 'Le montant et la date de paiement sont requis.';
         return;
       }
@@ -67,7 +68,7 @@ export const usePaymentStore = defineStore('paymentStore', {
     },
 
     async updatePayment(payment) {
-      if (!payment.amount || !payment.paymentDate) {
+      if (!payment.amount) {
         this.error = 'Le montant et la date de paiement sont requis.';
         return;
       }
@@ -76,7 +77,7 @@ export const usePaymentStore = defineStore('paymentStore', {
       try {
         const response = await axios.put(`http://localhost:3000/api/payments/${payment.id}`, payment);
         if (response.status === 200) {
-          const index = this.payments.findIndex(p => p.id === payment.id);
+          const index = this.payments.findIndex(ec => ec.id === payment.id);
           if (index !== -1) {
             this.payments[index] = response.data;
             this.successMessage = 'Paiement mis à jour avec succès !';

@@ -15,51 +15,16 @@
             />
           </div>
           <div class="col-md-6">
-            <label for="amount" class="form-label">Montant :</label>
-            <input
-              type="number"
-              id="amount"
-              v-model="expense.amount"
-              class="form-control"
-              required
-            />
-          </div>
-          <div class="col-md-6">
-            <label for="frequency" class="form-label">Fréquence :</label>
-            <select id="frequency" v-model="expense.frequency" class="form-select">
-              <option value="Mensuel">Mensuel</option>
-              <option value="Annuel">Annuel</option>
-              <option value="Hebdomadaire">Hebdomadaire</option>
-            </select>
-          </div>
-          <div class="col-md-6">
-            <label for="categoryId" class="form-label">Catégorie :</label>
-            <select id="categoryId" v-model="expense.categoryId" class="form-select" required>
+            <label for="categoryId" class="form-label">Catégorie</label>
+            <select id="categoryId" v-model="expense.expenseCategoryId" class="form-select" required>
               <option value="" disabled>Choisir une catégorie</option>
               <option v-for="category in categoryStore.expenseCategories" :key="category.id" :value="category.id">
                 {{ category.name }}
               </option>
             </select>
           </div>
-          <div class="col-md-6">
-            <label for="startDate" class="form-label">Date de début :</label>
-            <input
-              type="date"
-              id="startDate"
-              v-model="expense.startDate"
-              class="form-control"
-              required
-            />
-          </div>
-          <div class="col-md-6">
-            <label for="endDate" class="form-label">Date de fin :</label>
-            <input
-              type="date"
-              id="endDate"
-              v-model="expense.endDate"
-              class="form-control"
-            />
-          </div>
+          
+         
         </div>
         <div class="d-flex justify-content-between mt-3">
           <button type="submit" class="btn btn-primary w-100 me-1">
@@ -88,52 +53,43 @@ const categoryStore = useExpenseCategoryStore();
 
 const expense = ref({
   title: '',
-  amount: 0,
-  frequency: '',
-  startDate: '',
-  endDate: '',
   categoryId: ''
 });
 
 onMounted(async () => {
-  // Chargement des catégories
   await categoryStore.loadExpenseCategories();
-
-  // Chargement de la dépense actuelle à partir de l'ID
   await expenseStore.getExpenseById(route.params.id);
   const data = expenseStore.expense;
 
   if (data) {
     expense.value = {
       ...data,
-      startDate: data.startDate.split('T')[0], // Formatage de la date si nécessaire
-      endDate: data.endDate ? data.endDate.split('T')[0] : ''
+      // title: data.title || '',
+      // categoryId: data.categoryId || '',
+      // ...data,
+      // startDate: data.startDate.split('T')[0], // Formatage de la date si nécessaire
+      // endDate: data.endDate ? data.endDate.split('T')[0] : ''
     };
   }
 });
 
 const submitForm = async () => {
   try {
-    // Mise à jour de la dépense
     await expenseStore.updateExpense({
       id: route.params.id,
       ...expense.value,
     });
 
-    // Afficher une alerte de succès
     Swal.fire({
       icon: 'success',
       title: 'Dépense mise à jour',
       text: 'La dépense a été mise à jour avec succès.',
       confirmButtonText: 'OK'
     });
-
-    // Redirection vers la liste des dépenses
     router.push({ name: 'expenses' });
   } catch (error) {
     console.error("Erreur lors de la mise à jour de la dépense:", error);
 
-    // Afficher une alerte d'erreur
     Swal.fire({
       icon: 'error',
       title: 'Erreur',

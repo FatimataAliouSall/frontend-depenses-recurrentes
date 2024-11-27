@@ -35,10 +35,12 @@
 import { onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useExpenseCategoryStore } from '@/stores/expenseCategoryStore.js';
+import { useToast } from 'vue-toastification'; 
 import Swal from 'sweetalert2';
 
 const expenseCategoryStore = useExpenseCategoryStore();
 const router = useRouter();
+const toast = useToast(); 
 
 // Accès à la propriété `expenseCategories` dans le store
 const expenseCategories = computed(() => expenseCategoryStore.expenseCategories);
@@ -72,10 +74,11 @@ const deleteCategory = async (categoryId) => {
 
   if (result.isConfirmed) {
     try {
+      const expenseCategoryStore = useExpenseCategoryStore(); // Accéder au store
       await expenseCategoryStore.removeExpenseCategory(categoryId);
-      await fetchExpenseCategories();
+      await expenseCategoryStore.loadExpenseCategories(); // Recharger les catégories
       
-      // Afficher une alerte de succès
+      // Afficher une alerte de succès avec Swal
       Swal.fire({
         icon: 'success',
         title: 'Catégorie supprimée',
@@ -84,17 +87,42 @@ const deleteCategory = async (categoryId) => {
       });
     } catch (error) {
       console.error("Erreur lors de la suppression de la catégorie :", error);
-      
-      // Afficher une alerte d'erreur
-      Swal.fire({
-        icon: 'error',
-        title: 'Erreur',
-        text: 'Une erreur est survenue lors de la suppression de la catégorie.',
-        confirmButtonText: 'OK',
-      });
+
+      // Ajouter un log pour inspecter l'erreur
+      console.log(error); // Vérifier la structure de l'objet error
+
+      // Vérifier si l'erreur contient un message et s'il inclut une information sur la contrainte de clé étrangère
+      if (error?.response?.data?.message?.includes('associée à')) {
+        // Extraire le message d'erreur
+        const errorMessage = error?.response?.data?.message || 'Impossible de supprimer la catégorie.';
+        
+        // Afficher une notification toast
+        toast.warning(errorMessage, {
+          position: 'top-right',
+          timeout: 5000,
+        });
+
+        // Afficher une alerte SweetAlert avec le message d'erreur spécifique
+        Swal.fire({
+          icon: 'error',
+          title: 'Erreur',
+          text: errorMessage,
+          confirmButtonText: 'OK',
+        });
+      } else {
+        // Si l'erreur n'est pas liée à la contrainte de clé étrangère
+        Swal.fire({
+          icon: 'error',
+          title: 'Erreur',
+          text: 'Une erreur est survenue lors de la suppression de la catégorie.',
+          confirmButtonText: 'OK',
+        });
+      }
     }
   }
 };
+
+
 
 onMounted(fetchExpenseCategories);
 </script>

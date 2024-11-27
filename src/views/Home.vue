@@ -1,35 +1,161 @@
 <template>
-    <div class="container-fluid h-80">
-      <div id="carouselExampleDark " class="carousel carousel-dark slide" data-bs-ride="carousel">
-  <div class="carousel-indicators">
-    <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-    <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="1" aria-label="Slide 2"></button>
-    <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="2" aria-label="Slide 3"></button>
-  </div>
-  <div class="carousel-inner">
-    <div class="carousel-item active" data-bs-interval="10000">
-      <img src="https://images.pexels.com/photos/5849565/pexels-photo-5849565.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" class="d-block w-100" alt="...">
-      <div class="carousel-caption d-none d-md-block">
-        <h5>Gestion De Depenses</h5>
-        <!-- <p>Some representative placeholder content for the first slide.</p> -->
-        <RouterLink to="/dashboard" class="btn btn-info">Découvrir</RouterLink>
-      </div>
-    
-  </div>
-  </div>
-  
-</div>  
+  <div class="dashboard container">
+    <h1 class="text-center my-4">💰 Tableau de bord financier</h1>
+
+    <!-- Alerte pour paiements en retard -->
+    <div v-if="overduePaymentsCount > 0" class="alert alert-danger text-center" role="alert">
+      <strong>Attention!</strong> Vous avez {{ overduePaymentsCount }} paiement(s) en retard !
     </div>
-    
+
+    <!-- Total des paiements, paiements à venir, paiements effectués -->
+    <div class="row mb-5">
+      <div class="col-md-4">
+        <div class="card text-center shadow-sm animate__animated animate__fadeInUp" style="animation-delay: 0.2s;">
+          <div class="card-body">
+            <h5 class="card-title">Total des paiements</h5>
+            <p class="display-6 text-primary">{{ totalPayments }} MRU</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card text-center shadow-sm animate__animated animate__fadeInUp" style="animation-delay: 0.4s;">
+          <div class="card-body">
+            <h5 class="card-title">Paiements à venir</h5>
+            <p class="display-6 text-warning">{{ upcomingPayments }} MRU</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card text-center shadow-sm animate__animated animate__fadeInUp" style="animation-delay: 0.6s;">
+          <div class="card-body">
+            <h5 class="card-title">Paiements effectués</h5>
+            <p class="display-6 text-success">{{ completedPayments }} MRU</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Graphique des dépenses par mois -->
+    <div class="row mb-5">
+      <div class="col-md-12">
+        <div class="card shadow-sm animate__animated animate__fadeInLeft">
+          <div class="card-body">
+            <h5 class="card-title text-center">Dépenses par mois </h5>
+            <ExpensesByMonthChart  :payment-data="paymentData" :planning-data="plannigData"/>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Graphiques supplémentaires -->
+    <div class="row">
+      <div class="col-md-6 mb-4">
+        <div class="card shadow-sm animate__animated animate__fadeInLeft">
+          <div class="card-body">
+            <h5 class="card-title text-center">Dépenses par catégorie</h5>
+            <DoughnutChart />
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 mb-4">
+        <div class="card shadow-sm animate__animated animate__fadeInRight">
+          <div class="card-body">
+            <h5 class="card-title text-center">Évolution des dépenses</h5>
+            <LineChart />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
-<script setup></script>
+
+<script setup>
+import { usePaymentStore } from "@/stores/PaymentStore.js";
+import { useExpenseStore } from "@/stores/ExpenseStore.js";
+import { usePlanningStore } from "@/stores/PlanningStore";
+import { onMounted, computed } from "vue";
+import DoughnutChart from "./chartComponents/DoughnutChart.vue";
+import LineChart from "./chartComponents/LineChart.vue";
+import ExpensesByMonthChart from "./chartComponents/ExpensesByMonthChart.vue";
+
+const paymentStore = usePaymentStore();
+const expenseStore = useExpenseStore();
+const planningStore = usePlanningStore();
+
+// Charger les données nécessaires
+onMounted(() => {
+  paymentStore.loadPayments();
+  expenseStore.loadExpenses();
+  planningStore.loadPlannings();
+
+  console.log("Paiements chargés :", paymentStore.payments);
+  console.log("Dépenses chargées :", expenseStore.expenses);
+});
+
+// Calculer les totaux
+const totalPayments = computed(() => {
+  const total = paymentStore.payments.reduce((sum, payment) => sum + parseFloat(payment.amount), 0).toFixed(2);
+  console.log("Total des paiements calculé :", total);
+  return total;
+});
+
+const upcomingPayments = computed(() => {
+  const total = paymentStore.payments
+    .filter(payment => new Date(payment.paymentDate) > new Date())
+    .reduce((sum, payment) => sum + parseFloat(payment.amount), 0)
+    .toFixed(2);
+  console.log("Paiements à venir calculés :", total);
+  return total;
+});
+const  paymentData =  [5, 19, 30, 15, 2,30];
+const  plannigData =  [12, 19, 3, 5, 2, 3];
+const completedPayments = computed(() => {
+  const total = paymentStore.payments
+    .filter(payment => new Date(payment.paymentDate) <= new Date())
+    .reduce((sum, payment) => sum + parseFloat(payment.amount), 0)
+    .toFixed(2);
+  console.log("Paiements effectués calculés :", total);
+  return total;
+});
+
+// Paiements en retard
+const overduePayments = computed(() => {
+  const overdue = paymentStore.payments.filter(payment => new Date(payment.paymentDate) < new Date() && !payment.isPaid);
+  console.log("Paiements en retard :", overdue);
+  return overdue;
+});
+
+
+
+const overduePaymentsCount = computed(() => {
+  console.log("Nombre de paiements en retard :", overduePayments.value.length);
+  return overduePayments.value.length;
+});
+</script>
+
 <style scoped>
-.carousel-item {
-    height: 100vh;
+.dashboard {
+  padding: 20px;
 }
 
-.carousel-item .carousel-caption{
-    padding: 20px;
-    /* background-color: rgba(0, 0, 139, 0.642); */
+.card {
+  border-radius: 10px;
+}
+
+.card:hover {
+  transform: scale(1.05);
+  transition: transform 0.3s ease;
+}
+
+.card-title {
+  font-weight: bold;
+}
+
+h1 {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #4BC0C0;
+  text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.1);
 }
 </style>

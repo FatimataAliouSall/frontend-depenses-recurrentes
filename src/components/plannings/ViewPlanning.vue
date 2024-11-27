@@ -19,6 +19,9 @@
               <strong>Montant :</strong> {{ planning.amount }}
             </div>
             <div class="detail-item">
+              <strong>Unité :</strong> {{ planning.unit }}
+            </div>
+            <div class="detail-item">
               <strong>Date de début :</strong> {{ planning.startDate }}
             </div>
             <div class="detail-item">

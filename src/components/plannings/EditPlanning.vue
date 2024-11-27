@@ -16,13 +16,28 @@
           </div>
           <div class="col-md-6">
             <label for="amount" class="form-label">Montant :</label>
-            <input
-              type="number"
-              id="amount"
-              v-model="planning.amount"
-              class="form-control"
-              required
-            />
+            <div class="input-group">
+              <input
+                type="number"
+                id="amount"
+                v-model="planning.amount"
+                class="form-control"
+                :disabled="planning.isPaid"
+                required
+              />
+              <select
+                v-model="planning.unit"
+                class="form-select"
+                :disabled="planning.isPaid"
+                required
+              >
+                <option value="" disabled>Device</option>
+                <option value="euro">Euro</option>
+                <option value="MRU">Ouguiya</option>
+                <option value="CFA">Franc CFA</option>
+                <option value="dinar">Dinar</option>
+              </select>
+            </div>
           </div>
           <div class="col-md-6">
             <label for="startDate" class="form-label">Date de début :</label>
@@ -40,6 +55,15 @@
               type="date"
               id="endDate"
               v-model="planning.endDate"
+              class="form-control"
+            />
+          </div>
+          <div class="col-md-6">
+            <label for="dueDate" class="form-label">Date d'échéance :</label>
+            <input
+              type="date"
+              id="dueDate"
+              v-model="planning.dueDate"
               class="form-control"
             />
           </div>
@@ -91,8 +115,11 @@ const planning = ref({
   name: '',
   startDate: '',
   endDate: '',
+  dueDate: '',
   amount: 0,
-  expenseId: ''
+  unit: '',
+  expenseId: '',
+  isPaid: false // Indique si la planification est payée
 });
 
 onMounted(async () => {
@@ -103,17 +130,47 @@ onMounted(async () => {
   if (data) {
     planning.value = {
       ...data,
-      startDate: data.startDate.split('T')[0], // Formatage de la date si nécessaire
-      endDate: data.endDate ? data.endDate.split('T')[0] : ''
+      startDate: data.startDate.split('T')[0],
+      endDate: data.endDate ? data.endDate.split('T')[0] : '',
+      dueDate: data.dueDate ? data.dueDate.split('T')[0] : '',
+      isPaid: data.isPaid || false // Si déjà payé, désactiver la modification du montant
     };
   }
 });
 
+const validateDates = () => {
+  const { startDate, endDate, dueDate } = planning.value;
+
+  if (new Date(endDate) < new Date(startDate)) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Erreur',
+      text: 'La date de fin ne peut pas être antérieure à la date de début.',
+      confirmButtonText: 'OK'
+    });
+    return false;
+  }
+
+  if (new Date(dueDate) < new Date(startDate) || new Date(dueDate) > new Date(endDate)) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Erreur',
+      text: 'La date d\'échéance doit être comprise entre la date de début et la date de fin.',
+      confirmButtonText: 'OK'
+    });
+    return false;
+  }
+
+  return true;
+};
+
 const submitForm = async () => {
+  if (!validateDates()) return;
+
   try {
     await planningStore.updatePlanning({
       id: route.params.id,
-      ...planning.value,
+      ...planning.value
     });
     Swal.fire({
       title: 'Succès!',
@@ -152,5 +209,13 @@ h2 {
 
 .form-label {
   font-weight: bold;
+}
+
+.input-group .form-control {
+  flex: 2;
+}
+
+.input-group .form-select {
+  flex: 1;
 }
 </style>

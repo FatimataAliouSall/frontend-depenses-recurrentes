@@ -6,6 +6,7 @@
       <thead>
         <tr>
           <th>Montant</th>
+          <th>Devise</th>
           <th>Date paiement</th>
           <th>Reference</th>
           <!-- <th>User</th> -->
@@ -17,6 +18,7 @@
       <tbody>
         <tr v-for="payment in payments" :key="payment.id">
           <td>{{ payment.amount }}</td>
+          <td>{{ payment.unit || 'N/A' }}</td> 
           <td>{{ new Date(payment.paymentDate).toLocaleDateString() }}</td>
           <td>{{ payment.reference || 'N/A' }}</td>
           <!-- <td>{{ payment.user?.username || 'N/A' }}</td> -->
@@ -56,7 +58,7 @@ const editPayment = (paymentId) => {
 };
 
 const viewPayment = (paymentId) => {
-  router.push({ name: '', params: { id: paymentId } });
+  router.push({ name: 'viewPayment', params: { id: paymentId } });
 };
 
 const deletePayment = async (paymentId) => {
@@ -65,11 +67,8 @@ const deletePayment = async (paymentId) => {
   if (confirmDelete) {
     try {
       console.log("Début de la suppression de paiement avec ID:", paymentId);
-      
-      await paymentStore.removeExpense(paymentId); 
-      
+      await paymentStore.removePayment(paymentId); 
       console.log("Suppression réussie, actualisation de la liste...");
-      
       await fetchPayments();  
       alert("Paiement supprimé avec succès.");
     } catch (error) {

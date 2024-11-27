@@ -1,6 +1,9 @@
 <template>
   <div>
     <h2>Liste des dépenses</h2>
+    <div v-if="errorMessage" class="alert alert-danger" role="alert">
+      {{ errorMessage }}
+    </div>
     <div class="mb-3">
       <input
         type="text"
@@ -15,11 +18,7 @@
       <thead>
         <tr>
           <th>Titre</th>
-          <th>Montant</th>
-          <th>Fréquence</th>
           <th>Date création</th>
-          <th>Date debut</th>
-          <th>Date fin</th>
           <th>Catégorie</th>
           <th>Actions</th>
         </tr>
@@ -27,12 +26,8 @@
       <tbody>
         <tr v-for="expense in filteredExpenses" :key="expense.id">
           <td>{{ expense.title }}</td>
-          <td>{{ expense.amount }}</td>
-          <td>{{ expense.frequency }}</td>
           <td>{{ new Date(expense.dateCreate).toLocaleDateString() }}</td>
-          <td>{{ new Date(expense.startDate).toLocaleDateString() }}</td>
-          <td>{{ new Date(expense.endDate).toLocaleDateString() }}</td>
-          <td>{{ expense.category?.name }}</td>
+          <td>{{ expense.category?.name || 'N/A' }}</td>
           <td>
             <button @click="editexpense(expense.id)" class="btn btn-warning btn-sm me-2"><i class="fas fa-edit"></i></button>
             <button @click="deleteexpense(expense.id)" class="btn btn-danger btn-sm me-2"><i class="fas fa-trash-alt"></i></button>
@@ -53,7 +48,8 @@ const expenseStore = useExpenseStore();
 const router = useRouter();
 
 const expenses = computed(() => expenseStore.expenses);
-const searchQuery = ref('');  // Recherche par titre
+const searchQuery = ref('');  
+const errorMessage = ref(''); // Ajout pour afficher les erreurs
 
 const filteredExpenses = computed(() => {
   return expenses.value.filter(expense => 
@@ -87,12 +83,13 @@ const deleteexpense = async (expenseId) => {
       console.log("Suppression réussie, actualisation de la liste...");
       await fetchExpenses();  
       alert("Dépense supprimée avec succès.");
+      errorMessage.value = ''; 
     } catch (error) {
       console.error("Erreur lors de la suppression de la dépense :", error);
       if (error.response && error.response.data && error.response.data.message) {
-        alert(error.response.data.message + "\n" + error.response.data.suggestion);
+        errorMessage.value = error.response.data.message + " " + error.response.data.suggestion;
       } else {
-        alert("Une erreur s'est produite lors de la suppression de la dépense. Veuillez réessayer.");
+        errorMessage.value = "Une erreur s'est produite lors de la suppression de la dépense. Veuillez réessayer.";
       }
     }
   }

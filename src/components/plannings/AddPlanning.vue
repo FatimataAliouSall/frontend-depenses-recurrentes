@@ -19,7 +19,22 @@
           </div>
           <div class="col-md-6">
             <label for="amount" class="form-label">Montant</label>
-            <input type="number" v-model="planning.amount" class="form-control" id="amount" required />
+            <div class="d-flex">
+              <input 
+                type="number" 
+                v-model="planning.amount" 
+                class="form-control me-2" 
+                id="amount" 
+                required 
+              />
+              <select v-model="planning.unit" class="form-select" id="unit" required>
+                <option value="" disabled>Devise</option>
+                <option value="EUR">Euro (€)</option>
+                <option value="MRU">Ouguiya (UM)</option>
+                <option value="CFA">Franc CFA (CFA)</option>
+                <option value="DZD">Dinar (DZD)</option>
+              </select>
+            </div>
           </div>
           <div class="col-md-6">
             <label for="startDate" class="form-label">Date de début</label>
@@ -28,6 +43,10 @@
           <div class="col-md-6">
             <label for="endDate" class="form-label">Date de fin</label>
             <input type="date" v-model="planning.endDate" class="form-control" id="endDate" required />
+          </div>
+          <div class="col-md-6">
+            <label for="dueDate" class="form-label">Date d'échéance</label>
+            <input type="date" v-model="planning.dueDate" class="form-control" id="dueDate" required />
           </div>
           <div class="col-md-12">
             <label for="expenseId" class="form-label">Dépense</label>
@@ -64,21 +83,52 @@ const planning = ref({
   name: '',
   startDate: '',
   endDate: '',
+  dueDate: '',
   amount: 0,
+  unit: '',
   expenseId: ''
 });
 
+const validateDates = () => {
+  const { startDate, endDate, dueDate } = planning.value;
+
+  if (new Date(endDate) < new Date(startDate)) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Erreur',
+      text: 'La date de fin ne peut pas être antérieure à la date de début.',
+      confirmButtonText: 'OK'
+    });
+    return false;
+  }
+
+  if (new Date(dueDate) < new Date(startDate) || new Date(dueDate) > new Date(endDate)) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Erreur',
+      text: 'La date d\'échéance doit être comprise entre la date de début et la date de fin.',
+      confirmButtonText: 'OK'
+    });
+    return false;
+  }
+
+  return true;
+};
+
 const submitForm = async () => {
+  if (!validateDates()) return;
+
   try {
     await planningStore.addPlanning({
       name: planning.value.name,
       startDate: planning.value.startDate,
       endDate: planning.value.endDate,
+      dueDate: planning.value.dueDate,
       amount: planning.value.amount,
+      unit: planning.value.unit,
       expenseId: planning.value.expenseId
     });
 
-    // Afficher une alerte de succès avec SweetAlert2
     Swal.fire({
       icon: 'success',
       title: 'Planification ajoutée',
@@ -89,7 +139,6 @@ const submitForm = async () => {
     await planningStore.loadPlannings();
     router.push({ name: 'planning' });
   } catch (error) {
-    // Afficher une alerte d'erreur avec SweetAlert2 en cas de problème
     Swal.fire({
       icon: 'error',
       title: 'Erreur',

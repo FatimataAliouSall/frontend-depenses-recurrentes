@@ -144,11 +144,7 @@ export const useExpenseStore = defineStore('expenseStore', {
     expense: {
       id: null,
       title: '',
-      amount: '',
-      frequency: '',
       dateCreate: '',
-      startDate: '',
-      endDate: '',
       userId: null,
       expenseCategory: '',
     },

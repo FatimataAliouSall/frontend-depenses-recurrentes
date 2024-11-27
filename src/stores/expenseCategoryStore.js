@@ -20,10 +20,15 @@ export const useExpenseCategoryStore = defineStore('expenseCategoryStore', {
       this.expenseCategories = [];
       this.isLoading = true;
       this.error = null;
+      
+      
       try {
         const response = await axios.get('http://localhost:3000/api/expense-categories');
         if (response.status === 200) {
+          
           this.expenseCategories = response.data;
+          
+          
         } else {
           console.error('Échec du chargement des catégories de dépenses avec le statut :', response.status);
         }
@@ -36,15 +41,16 @@ export const useExpenseCategoryStore = defineStore('expenseCategoryStore', {
     },
 
     async addExpenseCategory(expenseCategory) {
+      const errors = []; // Tableau pour stocker les erreurs spécifiques
+    
       if (!expenseCategory.name) {
-        this.error = 'Le nom de la catégorie est requis.';
-        return;
+        errors.push({ path: 'name', msg: 'Le nom de la catégorie est requis.' });
       }
-
+    
       this.isLoading = true;
       this.error = null;
       this.successMessage = null;
-
+    
       try {
         const response = await axios.post('http://localhost:3000/api/expense-categories', expenseCategory);
         if (response.status === 201) {
@@ -55,12 +61,17 @@ export const useExpenseCategoryStore = defineStore('expenseCategoryStore', {
         }
       } catch (error) {
         this.error = 'Erreur lors de l\'ajout de la catégorie de dépenses';
+        if (error.response && error.response.data && error.response.data.errors) {
+          // Ici, vous pouvez envoyer les erreurs spécifiques de l'API à votre composant
+          errors.push(...error.response.data.errors);
+        }
         console.error(this.error, error.response?.data || error.message);
       } finally {
         this.isLoading = false;
+        return errors; // Retourner les erreurs spécifiques
       }
     },
-
+    
     async removeExpenseCategory(id) {
       this.isLoading = true;
       this.error = null;

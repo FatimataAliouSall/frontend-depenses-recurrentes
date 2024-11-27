@@ -12,7 +12,11 @@
             id="name" 
             placeholder="Entrez le nom de la méthode de paiement" 
             required
+            :class="{ 'is-invalid': errors.name }"
           />
+          <small v-if="errors.name" class="text-danger">
+            {{ errors.name }}
+          </small>
         </div>
         
         <div class="mb-2">
@@ -55,7 +59,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { usePaymentMethodStore } from '@/stores/PaymentMethodStore.js';
 import { useRouter } from 'vue-router';
 import Swal from 'sweetalert2';
@@ -65,19 +69,46 @@ const router = useRouter();
 
 const name = ref('');
 const status = ref(true);
+const errors = ref({});
+const serverErrors = ref([]); 
+
+watch(serverErrors, (newErrors) => {
+  errors.value = {}; 
+  newErrors.forEach((err) => {
+    if (err.path === 'name') {
+      errors.value.name = err.msg;
+    }
+    if (err.path === 'status') {
+      errors.value.status = err.msg;
+    }
+  });
+});
 
 const submitForm = async () => {
+  serverErrors.value = [];
   try {
-    console.log("Tentative d'ajout...");
-    await PaymentMethodStore.addPaymentMethod({ name: name.value, status: status.value });
-    console.log("Méthode ajoutée, affichage de l'alerte...");
-    Swal.fire({
-      icon: 'success',
-      title: 'Méthode de paiement ajoutée',
-      text: 'La méthode de paiement a été ajoutée avec succès.',
-      confirmButtonText: 'OK'
-    });
-    router.push({ name: 'paymentMethods' });
+    const errorsFromServer = await PaymentMethodStore.addPaymentMethod({ name: name.value, status: status.value });
+    if (errorsFromServer.length > 0) {
+      // Si des erreurs existent, on les assigne à l'objet `errors` de manière structurée
+      errors.value = {};
+      errorsFromServer.forEach((err) => {
+        if (err.path === 'name') {
+          errors.value.name = err.msg;
+        }
+        if (err.path === 'status') {
+          errors.value.status = err.msg;
+        }
+      });
+    } else {
+      Swal.fire({
+        icon: 'success',
+        title: 'Methode de paiement ajouté',
+        text: `La methode "${name.value}" a été ajouté avec succès.`,
+        confirmButtonText: 'OK',
+      }).then(() => {
+        router.push({ name: 'paymentMethods' });
+      });
+    }
   } catch (error) {
     console.error('Erreur lors de l\'ajout du mode de paiement:', error);
     Swal.fire({
